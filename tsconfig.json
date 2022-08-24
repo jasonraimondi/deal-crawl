@@ -1,4 +1,7 @@
 {
+  "ts-node": {
+    "files": true
+  },
   "extends": "@apify/tsconfig",
   "compilerOptions": {
     "module": "commonjs",

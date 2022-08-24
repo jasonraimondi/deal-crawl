@@ -1,46 +1,68 @@
-import { createPlaywrightRouter, Dataset } from 'crawlee';
+import { createPlaywrightRouter, Dataset, KeyValueStore } from "crawlee";
+import { Page } from "playwright";
+import dayjs from "dayjs";
 
-// createPlaywrightRouter() is only a helper to get better
-// intellisense and typings. You can use Router.create() too.
 const router = createPlaywrightRouter();
 
-// This replaces the request.label === DETAIL branch of the if clause.
-router.addHandler('DETAIL', async ({ request, page, log }) => {
-    log.debug(`Extracting data: ${request.url}`)
-    const urlParts = request.url.split('/').slice(-2);
-    const modifiedTimestamp = await page.locator('time[datetime]').getAttribute('datetime');
-    const runsRow = page.locator('ul.ActorHeader-stats > li').filter({ hasText: 'Runs' });
-    const runCountString = await runsRow.locator('span').last().textContent();
+const PRODUCT_PAGE = "PRODUCT_PAGE";
 
-    const results = {
-        url: request.url,
-        uniqueIdentifier: urlParts.join('/'),
-        owner: urlParts[0],
-        title: await page.locator('h1').textContent(),
-        description: await page.locator('span.actor-description').textContent(),
-        modifiedDate: new Date(Number(modifiedTimestamp)),
-        runCount: Number(runCountString?.replace(/,/g, '')),
+router.addHandler(PRODUCT_PAGE, async ctx => {
+  const { request, page, enqueueLinks, log } = ctx;
+  log.info(`scraping ${request.url}`);
+
+  const id = new URL(request.url).pathname.split("/")[2];
+
+  await page.waitForSelector("[name='price']");
+  await page.waitForSelector("[data-section='product-overview']");
+
+  const originalPrice = await page.locator(".u__strike").textContent();
+  const dollars = await page.$$eval(".u__text--success span", ([el]) => el.textContent);
+  const percent = await page.$eval(".u__text--success", el => el.textContent?.match(/\d+%/g)?.[0]);
+  const price = await page.$eval(".price-format__main-price", el => {
+    const arr = el.textContent?.split("") ?? [];
+    if (arr.length > 1) arr.splice(arr.length - 2, 0, ".");
+    return arr.join("");
+  });
+  log.info("saving data");
+
+  // saving result of map to default Key-value store
+  await KeyValueStore.setValue(`${dayjs().format("YYYY-MM-DD")}_${id}`, {
+    url: request.url,
+    price,
+    price_original: originalPrice,
+    dollars_off_s: dollars,
+    percent_off_s: percent,
+    dollars_off: Number(dollars?.replace("$", "")),
+    percent_off: Number(percent?.replace("%", "")),
+    title: await page.locator(".product-title").textContent(),
+    brand: await page.locator(".product-details__brand--link").textContent(),
+    description: await page.locator(".desktop-content-wrapper__main-description").textContent(),
+  });
+});
+
+async function scrollToBottom(page: Page) {
+  await page.evaluate(async () => {
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    for (let i = 0; i < document.body.scrollHeight; i += 100) {
+      window.scrollTo(0, i);
+      await delay(100);
     }
+  });
+}
 
-    log.debug(`Saving data: ${request.url}`)
-    await Dataset.pushData(results);
+router.addDefaultHandler(async ctx => {
+  const { request, page, enqueueLinks, log } = ctx;
+
+  await page.waitForSelector("#products-grid-0");
+
+  await scrollToBottom(page);
+
+  log.info(`Enqueueing pagination: ${request.url}`);
+  await enqueueLinks({
+    selector: "[data-type='product'] a",
+    label: PRODUCT_PAGE,
+  });
+  log.info(`handle: ${request.url}`);
 });
 
-// This is a fallback route which will handle the start URL
-// as well as the LIST labelled URLs.
-router.addDefaultHandler(async ({ request, page, enqueueLinks, log }) => {
-    log.debug(`Enqueueing pagination: ${request.url}`)
-    // await page.waitForSelector('.ActorStorePagination-pages a');
-    // await enqueueLinks({
-    //     selector: '.ActorStorePagination-pages > a',
-    //     label: 'LIST',
-    // })
-    // log.debug(`Enqueueing actor details: ${request.url}`)
-    // await page.waitForSelector('.ActorStoreItem');
-    // await enqueueLinks({
-    //     selector: '.ActorStoreItem',
-    //     label: 'DETAIL', // <= note the different label
-    // })
-});
-
-export { router }
+export { router };
