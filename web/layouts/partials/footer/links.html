@@ -1,0 +1,16 @@
+{{ with $.Site.Params.ExternalMenu }}
+<footer class="footer">
+  <h4 class="h2 footer--title">{{ .Title }}</h4>
+  <ul class="footer--list">
+    {{ with $.Site.Params.Twitter}}
+    <li class="footer--list--item">
+      <a href="https://twitter.com/{{ . }}" target="_blank" rel="nofollow">Twitter</a>
+    </li>
+    {{ end }} {{ range .Link }}
+    <li class="footer--list--item">
+      <a href="{{ .url | relURL }}" target="_blank" rel="nofollow">{{ .name }}</a>
+    </li>
+    {{ end }}
+  </ul>
+</footer>
+{{ end }}

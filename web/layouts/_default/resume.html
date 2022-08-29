@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  {{ $data := getJSON "../storage/key_value_stores/default/2022-08-28_Champion-Power-Equipment-19-in-212cc-4-Stroke-Gas-Garden-Counter-Rotating-Rear-Tine-Tiller-with-Self-Propelled-Agricultural-Tires-100380.json" -}}
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Test</title>
+  </head>
+  <body>
+  {{ $data }}
+  </body>
+
+  {{ if not site.IsServer }} {{ .Site.Params.AnalyticsSnippet | safeHTML }} {{ end }}
+</html>

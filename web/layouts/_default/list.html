@@ -1,0 +1,26 @@
+{{ define "main" }}
+
+<!-- "{{.Content}}" pulls from the markdown content of the corresponding _index.md -->
+{{ with .Content -}}
+<article>{{ . }}</article>
+{{ end -}}
+
+<ul class="list">
+    {{ range .Paginator.Pages.ByDate.Reverse -}}
+    <li>
+        <h3 class="list-item--title"><a href="{{ .Permalink | relURL }}">{{ .Title }}</a></h3>
+        <p class="list-item--date">
+            <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+            {{- .Date.Format "January 2, 2006" -}}
+            </time>
+        </p>
+        {{ if .Description -}}
+        <p class="list-item--description">{{ .Description | safeHTML }}</p>
+        {{ else -}}
+        <p class="list-item--description">{{ .Summary | safeHTML }}</p>
+        {{ end -}}
+    </li>
+    {{ end -}}
+</ul>
+
+{{ end }}

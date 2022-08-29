@@ -1,0 +1,41 @@
+<section id="experiences" class="section">
+  <header class="resume-grid">
+    <h3 class="left-column section-title">Experience</h3>
+  </header>
+
+  {{ $works := .works }} {{ range $idx, $work := $works -}} {{ $prev := index $works (sub $idx 1) }}
+  {{ $next := index $works (add $idx 1) }} {{ if not (hasPrefix $work.company "__") -}}
+  <article class="resume-grid item {{ if (eq $work.company $prev.company) }}short-col{{ end }}">
+    <div class="left-column">
+      {{ if not (eq $work.company $prev.company) }}
+      <p class="item-title">
+        {{ if isset $work "website" -}}
+        <a href="{{ $work.website }}" target="_blank" rel="noopener">{{ $work.company }}</a>
+        {{ else -}}
+        <a>{{ $work.company }}</a>
+        {{ end -}}
+      </p>
+      <p class="item-subtitle">{{ $work.position }}</p>
+      <p class="item-date">
+        {{ dateFormat "Jan 2006" $work.startDate }} - {{ if eq $work.endDate "present" }}present{{
+        else }}{{ dateFormat "Jan 2006" $work.endDate }}{{ end }}
+      </p>
+
+      {{ if (eq $work.company $next.company) }}
+      <p class="item-subtitle additional">{{ $next.position }}</p>
+      <p class="item-date">
+        {{ dateFormat "Jan 2006" $next.startDate }} - {{ if eq $next.endDate "present" }}present{{
+        else }}{{ dateFormat "Jan 2006" $next.endDate }}{{ end }}
+      </p>
+      {{ end }} {{ end -}}
+    </div>
+    <ul class="main-column item-list">
+      {{ with $work.summary -}} {{ if not (hasPrefix . "__") -}}
+      <!--            <li class="item-subtitle">{{ . | markdownify }}</li>-->
+      {{ end -}} {{ end -}} {{ range $work.highlights -}} {{ if not (hasPrefix . "__") -}}
+      <li>&dash; {{ . | markdownify }}</li>
+      {{ end -}} {{ end -}}
+    </ul>
+  </article>
+  {{ end -}} {{ end -}}
+</section>

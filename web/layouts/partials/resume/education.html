@@ -1,0 +1,17 @@
+<section id="educations" class="section">
+  <article class="resume-grid">
+    <h3 class="left-column section-title"><strong>Education</strong></h3>
+  </article>
+  {{ range .educations -}}
+  <article class="resume-grid">
+    <div class="left-column">
+      <p class="item-title">{{ .institution }}</p>
+      <p class="item-date">{{ dateFormat "Jan 2006" .endDate }}</p>
+    </div>
+    <div class="main-column">
+      <p class="item-subtitle">{{ .area }}</p>
+      <p class="item-subtitle">{{ .studyType }}</p>
+    </div>
+  </article>
+  {{ end -}}
+</section>

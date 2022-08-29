@@ -1,0 +1,24 @@
+<section id="projects" class="projects print-hide section">
+  <header class="resume-grid">
+    <h3 class="left-column section-title">Projects</h3>
+  </header>
+  {{ range .publications -}}
+  <article class="resume-grid item">
+    <div class="left-column">
+      {{ if isset . "website" }}
+      <a class="item-title" href="{{ .website }}" target="_blank" rel="noopener">{{ .name }}</a>
+      {{ else }}
+      <a class="item-title">{{ .company }}</a>
+      {{ end }}
+      <p class="item-date">{{ dateFormat "Jan 2006" .releaseDate }}</p>
+    </div>
+    <ul class="main-column item-list">
+      <li>
+        {{ .summary | markdownify }}
+        <br />
+        <a class="small" href="{{ .website | safeURL }}">{{ .website | safeURL }}</a>
+      </li>
+    </ul>
+  </article>
+  {{ end -}}
+</section>

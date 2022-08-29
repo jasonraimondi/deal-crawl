@@ -1,0 +1,79 @@
+{{ define "breadcrumbnav" }}
+{{ if .p1.Parent }}
+{{ template "breadcrumbnav" (dict "p1" .p1.Parent "p2" .p2 )  }}
+{{ else if not .p1.IsHome }}
+{{ template "breadcrumbnav" (dict "p1" .p1.Site.Home "p2" .p2 )  }}
+{{ end }}
+<li{{ if eq .p1 .p2 }} class="active"{{ end }}>
+  <a href="{{ .p1.Permalink }}">{{ if eq .p1.Title .p1.Site.Home.Title }}{{ template "homeicon" }}{{ else }}{{ .p1.Title }}{{ end }}</a>
+</li>
+{{ end }}
+
+{{ define "homeicon" }}
+<svg class="breadcrumbs--home" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 1000 1000" enable-background="new 0 0 1000 1000" xml:space="preserve">
+<g><path d="M500,71.3l-490,490l91.9,91.9l91.9-91.9L255,928.8h183.8V745h122.5v183.8H745l61.3-367.5l91.9,91.9l91.9-91.9L500,71.3z"/></g>
+</svg>
+{{ end }}
+
+{{ define "main" }}
+
+<article id="js-single" class="single" itemscope itemtype="http://schema.org/BlogPosting">
+    <header class="single--header">
+        <h1 class="single--title" itemprop="name headline">
+            {{ .Title }}
+            <div class="hidden" itemprop="author" itemscope itemtype="http://schema.org/Person">
+                <span itemprop="name">{{ .Site.Params.Name }}</span>
+            </div>
+        </h1>
+    </header>
+    <section class="single--post">
+        <section class="single--post--block1">
+            <ul class="single--post--tags">
+                {{ $taxonomyCategory := "categories" -}}
+                {{ with .Param $taxonomyCategory -}}
+                    {{ range $index, $category := . -}}
+                        {{ with $.Site.GetPage (printf "/%s/%s" $taxonomyCategory $category) -}}
+                <li><a href="{{ .RelPermalink }}" class="label inline">{{ $category | urlize }}</a></li>
+                        {{ end -}}
+                    {{ end -}}
+                {{ end -}}
+
+                {{ $taxonomyTag := "tags" -}}
+                {{ with .Param $taxonomyTag -}}
+                    {{ range $index, $tag := . -}}
+                        {{ with $.Site.GetPage (printf "/%s/%s" $taxonomyTag $tag) -}}
+                        <li><a href="{{ .RelPermalink }}" class="label">{{ $tag | urlize }}</a></li>
+                        {{ end -}}
+                    {{ end -}}
+                {{ end -}}
+            </ul>
+
+        </section>
+
+        <section>
+            <p class="single--date">
+                Published: 
+                <time datetime="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}"> {{ .Date.Format "January 2, 2006" }}</time>
+                {{ if ne .Date .Page.Lastmod }}
+                <span class="single--date--modified">
+                <span> | </span>Modified:&nbsp;
+                <time datetime="{{ .Page.Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+                    {{ .Page.Lastmod.Format "January 2, 2006" }}
+                    </time>
+            </span>
+                {{ end }}
+            </p>
+        </section>
+
+
+        <article class="single--post-body" itemprop="articleBody">
+            {{ if .Params.toc }}
+            {{ .TableOfContents }}
+            {{ end}}
+            {{ .Content }}
+        </article>
+    </section>
+
+</article>
+
+{{ end }}
