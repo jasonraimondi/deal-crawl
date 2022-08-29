@@ -1,4 +1,4 @@
-import { createPlaywrightRouter, Dataset, KeyValueStore } from "crawlee";
+import { createPlaywrightRouter, KeyValueStore } from "crawlee";
 import { Page } from "playwright";
 import dayjs from "dayjs";
 
@@ -7,14 +7,12 @@ const router = createPlaywrightRouter();
 const PRODUCT_PAGE = "PRODUCT_PAGE";
 
 router.addHandler(PRODUCT_PAGE, async ctx => {
-  const { request, page, enqueueLinks, log } = ctx;
+  const { request, page, log } = ctx;
   log.info(`scraping ${request.url}`);
-
-  const id = new URL(request.url).pathname.split("/")[2];
-
   await page.waitForSelector("[name='price']");
   await page.waitForSelector("[data-section='product-overview']");
 
+  const id = new URL(request.url).pathname.split("/")[2];
   const originalPrice = await page.locator(".u__strike").textContent();
   const dollars = await page.$$eval(".u__text--success span", ([el]) => el.textContent);
   const percent = await page.$eval(".u__text--success", el => el.textContent?.match(/\d+%/g)?.[0]);
@@ -26,7 +24,8 @@ router.addHandler(PRODUCT_PAGE, async ctx => {
   log.info("saving data");
 
   // saving result of map to default Key-value store
-  await KeyValueStore.setValue(`${dayjs().format("YYYY-MM-DD")}_${id}`, {
+  const date = dayjs().format("YYYY-MM-DD");
+  await KeyValueStore.setValue(`${date}_${id}`, {
     url: request.url,
     price,
     price_original: originalPrice,
