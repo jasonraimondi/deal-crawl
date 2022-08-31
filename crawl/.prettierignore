@@ -1,4 +1,4 @@
-storage
+web/data
 node_modules
 pnpm-lock.yaml
 web
