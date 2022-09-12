@@ -49,6 +49,8 @@ router.addHandler(PRODUCT_PAGE, async ctx => {
     updated_at: null,
   };
 
+  log.info(JSON.stringify(product, null, 2));
+
   await prisma.product
     .findFirstOrThrow({ where: { sale_date, title, brand } })
     .catch(async () => await prisma.product.create({ data: product }));

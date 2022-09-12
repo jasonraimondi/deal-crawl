@@ -1,5 +1,6 @@
 import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
-import { db } from "../lib/db.ts";
+import { ProductCard } from "../components/ProductCard.tsx";
+import { db, Product } from "../lib/db.ts";
 
 export const handler: Handlers = {
   async GET(_req: Request, ctx: HandlerContext) {
@@ -15,29 +16,14 @@ export const handler: Handlers = {
   },
 };
 
-export function toDollars(cents: number): string {
-  return "$" + (cents / 100).toFixed(2);
-}
-
-export function Product({ product }: any) {
-  return (
-    <ul className="border border-sm p-2 m-2">
-      <li>{product.brand}</li>
-      <li>{product.title}</li>
-      <li>{product.sale_date}</li>
-      <li>{product.image_urls?.join(",") ?? "No images"}</li>
-      <li><a className="text-blue-500 hover:text-blue-800" href={product.url}>link</a></li>
-      <li>{toDollars(product.price_sale)}</li>
-      <li>{product.percent_off}% off</li>
-    </ul>
-  );
-}
-
 export default function Page(props: PageProps<{ products: any[] }>) {
   return (
     <>
-      <h1>Hello</h1>
-      <ul>{props.data.products.map((p) => <li><Product product={p} /></li>)}</ul>
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+        {props.data.products.map((p) => (
+            <ProductCard product={p} />
+        )) ?? "No Content..."}
+      </div>
     </>
   );
 }
