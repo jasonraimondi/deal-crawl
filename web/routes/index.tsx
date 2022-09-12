@@ -20,9 +20,8 @@ export default function Page(props: PageProps<{ products: any[] }>) {
   return (
     <>
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-        {props.data.products.map((p) => (
-            <ProductCard product={p} />
-        )) ?? "No Content..."}
+        {props.data.products.map((p) => <ProductCard product={p} />) ??
+          "No Content..."}
       </div>
     </>
   );
