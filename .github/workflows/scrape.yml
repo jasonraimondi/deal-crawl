@@ -1,33 +1,33 @@
-on:
-  schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '30 11 * * *' # 7:30am est
+# on:
+#   schedule:
+#     # * is a special character in YAML so you have to quote this string
+#     - cron:  '30 11 * * *' # 7:30am est
 
-env:
-  PNPM_VERSION: "7"
-  NODE_VERSION: "16.x"
+# env:
+#   PNPM_VERSION: "7"
+#   NODE_VERSION: "16.x"
 
-jobs:
-  test_schedule:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2.2.2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-      - run: pnpm install --frozen-lockfile
-      - run: |
-          pnpm db:migrate:prod
-          pnpm gen
-        working-directory: ./prisma
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      - run: pnpm dev
-        working-directory: ./crawl
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+# jobs:
+#   test_schedule:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - uses: pnpm/action-setup@v2.2.2
+#         with:
+#           version: ${{ env.PNPM_VERSION }}
+#       - uses: actions/setup-node@v2
+#         with:
+#           node-version: ${{ env.NODE_VERSION }}
+#           cache: pnpm
+#           cache-dependency-path: pnpm-lock.yaml
+#       - run: pnpm install --frozen-lockfile
+#       - run: |
+#           pnpm db:migrate:prod
+#           pnpm gen
+#         working-directory: ./prisma
+#         env:
+#           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+#       - run: pnpm dev
+#         working-directory: ./crawl
+#         env:
+#           DATABASE_URL: ${{ secrets.DATABASE_URL }}
