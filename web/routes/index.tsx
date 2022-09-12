@@ -24,6 +24,8 @@ export function Product({ product }: any) {
     <ul className="border border-sm p-2 m-2">
       <li>{product.brand}</li>
       <li>{product.title}</li>
+      <li>{product.sale_date}</li>
+      <li>{product.image_urls?.join(",") ?? "No images"}</li>
       <li><a className="text-blue-500 hover:text-blue-800" href={product.url}>link</a></li>
       <li>{toDollars(product.price_sale)}</li>
       <li>{product.percent_off}% off</li>
