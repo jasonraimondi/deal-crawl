@@ -1,0 +1,33 @@
+{
+  "name": "@deal-crawl/prisma",
+  "version": "0.1.0",
+  "files": [
+    "dist",
+    "prisma"
+  ],
+  "main": "src/index.ts",
+  "publishConfig": {
+    "main": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc --build tsconfig.build.json",
+    "db:seed": "ts-node prisma/seed.ts",
+    "db:migrate": "prisma migrate dev",
+    "db:migrate:prod": "prisma migrate deploy",
+    "gen": "prisma generate",
+    "gen:watch": "prisma generate --watch",
+    "_postinstall": "npm run gen",
+    "format": "prisma format"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.16",
+    "prisma": "^4.3.1",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.8.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.3.1",
+    "cuid": "^2.1.8"
+  }
+}

@@ -1,6 +1,9 @@
-import { createPlaywrightRouter, KeyValueStore } from "crawlee";
+import { Product } from "@deal-crawl/prisma";
+import { createPlaywrightRouter } from "crawlee";
 import { Page } from "playwright";
 import dayjs from "dayjs";
+import cuid from "cuid";
+import { prisma } from "./db";
 
 const router = createPlaywrightRouter();
 
@@ -24,19 +27,28 @@ router.addHandler(PRODUCT_PAGE, async ctx => {
   log.info("saving data");
 
   // saving result of map to default Key-value store
-  const date = dayjs().format("YYYY-MM-DD");
-  await KeyValueStore.setValue(`${date}_${id}`, {
+  const sale_date = dayjs().format("YYYY-MM-DD");
+  const title = await page.locator(".product-title").textContent();
+  const brand = await page.locator(".product-details__brand--link").textContent();
+
+  const product: Product = {
     url: request.url,
-    price,
-    price_original: originalPrice,
-    dollars_off_s: dollars,
-    percent_off_s: percent,
-    dollars_off: Number(dollars?.replace("$", "")),
-    percent_off: Number(percent?.replace("%", "")),
-    title: await page.locator(".product-title").textContent(),
-    brand: await page.locator(".product-details__brand--link").textContent(),
+    price_sale: Number(price?.replace("$", "") ?? 0) * 100,
+    price_original: Number(originalPrice?.replace("$", "") ?? 0) * 100,
+    discount_cents: Number(dollars?.replace("$", "") ?? 0) * 100,
+    percent_off: Number(percent?.replace("%", "") ?? 0),
+    title,
+    brand,
     description: await page.locator(".desktop-content-wrapper__main-description").textContent(),
-  });
+    id: cuid(),
+    sale_date,
+    created_at: new Date(),
+    updated_at: null,
+  };
+
+  await prisma.product
+    .findFirstOrThrow({ where: { sale_date, title, brand } })
+    .catch(async () => await prisma.product.create({ data: product }));
 });
 
 async function scrollToBottom(page: Page) {

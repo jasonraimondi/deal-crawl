@@ -1,0 +1,30 @@
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/client"
+}
+
+generator client2 {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  id             String    @id @default(cuid())
+  url            String
+  title          String?
+  brand          String?
+  description    String?
+  price_sale     Int
+  price_original Int
+  discount_cents Int
+  percent_off    Int       @db.SmallInt
+  sale_date      String
+  created_at     DateTime  @default(now())
+  updated_at     DateTime? @updatedAt
+
+  @@index([sale_date, title, brand])
+}
