@@ -1,19 +1,15 @@
 import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
-import { Client } from "pg/mod.ts";
+import { db } from "../lib/db.ts";
 
 export const handler: Handlers = {
   async GET(_req: Request, ctx: HandlerContext) {
-    const client = new Client(
-      "postgresql://crawlee:secret@localhost:5432/crawlee",
-    );
-
     const sql =
       `SELECT * FROM "Product" ORDER BY sale_date DESC, percent_off DESC`;
 
-    await client.connect();
-    const products = await client.queryObject(sql);
+    await db.connect();
+    const products = await db.queryObject(sql);
 
-    await client.end();
+    await db.end();
 
     return await ctx.render({ products: products.rows });
   },
