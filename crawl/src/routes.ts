@@ -31,8 +31,11 @@ router.addHandler(PRODUCT_PAGE, async ctx => {
   const title = await page.locator(".product-title").textContent();
   const brand = await page.locator(".product-details__brand--link").textContent();
 
+  const image_urls = await page.$$eval(".mediagallery__mainimageblock img[src]", (imgs: HTMLImageElement[]) => imgs.map(img => img.src));
+
   const product: Product = {
     url: request.url,
+    image_urls,
     price_sale: Number(price?.replace("$", "") ?? 0) * 100,
     price_original: Number(originalPrice?.replace("$", "") ?? 0) * 100,
     discount_cents: Number(dollars?.replace("$", "") ?? 0) * 100,

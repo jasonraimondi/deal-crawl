@@ -15,6 +15,7 @@ generator client2 {
 model Product {
   id             String    @id @default(cuid())
   url            String
+  image_urls     String[]
   title          String?
   brand          String?
   description    String?
