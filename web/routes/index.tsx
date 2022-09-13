@@ -1,11 +1,15 @@
 import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
 import { ProductCard } from "../components/ProductCard.tsx";
 import { db, Product } from "../lib/db.ts";
+import { DateTimeFormatter } from "https://deno.land/std@0.155.0/datetime/formatter.ts";
+
+const formatter = new DateTimeFormatter("YYYY-MM-DD");
 
 export const handler: Handlers = {
   async GET(_req: Request, ctx: HandlerContext) {
+    
     const sql =
-      `SELECT * FROM "Product" ORDER BY sale_date DESC, percent_off DESC`;
+      `SELECT * FROM "Product" WHERE sale_date="${formatter.format(new Date())}" ORDER BY sale_date DESC, percent_off DESC`;
 
     await db.connect();
     const products = await db.queryObject(sql);
