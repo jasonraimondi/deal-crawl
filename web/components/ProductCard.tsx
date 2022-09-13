@@ -6,24 +6,26 @@ type Props = {
 };
 
 function usePercentOffColor(percent: number): string {
-  let color = "text-black";
+  let color = "text-green-500";
 
   if (percent < 9) {
-    color = "text-gray-200";
-  } else if (percent < 15) {
-    color = "text-gray-300";
-  } else if (percent < 21) {
     color = "text-gray-400";
+  } else if (percent < 15) {
+    color = "text-red-500";
+  } else if (percent < 21) {
+    color = "text-orange-400";
   } else if (percent < 24) {
-    color = "text-blue-400";
+    color = "text-orange-500";
   } else if (percent < 28) {
-    color = "text-green-400";
+    color = "text-yellow-400";
   } else if (percent < 32) {
-    color = "text-green-500";
+    color = "text-yellow-500";
   } else if (percent < 36) {
-    color = "text-green-600";
+    color = "text-lime-400";
   } else if (percent < 40) {
-    color = "text-green-700";
+    color = "text-lime-500";
+  } else if (percent < 45) {
+    color = "text-green-400";
   }
 
   return color;
