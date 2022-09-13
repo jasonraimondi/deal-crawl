@@ -21,9 +21,9 @@ function usePercentOffColor(percent: number): string {
   } else if (percent < 32) {
     color = "text-yellow-500";
   } else if (percent < 36) {
-    color = "text-lime-400";
+    color = "text-emerald-400";
   } else if (percent < 40) {
-    color = "text-lime-500";
+    color = "text-emerald-500";
   } else if (percent < 45) {
     color = "text-green-400";
   }
