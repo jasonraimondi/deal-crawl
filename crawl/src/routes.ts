@@ -13,7 +13,7 @@ router.addHandler(PRODUCT_PAGE, async ctx => {
   const { request, page, log } = ctx;
   log.info(`scraping ${request.url}`);
   await page.waitForSelector("[name='price']");
-  await page.waitForSelector("[data-section='product-overview']");
+  await page.waitForSelector("[name='product-details']");
 
   const id = new URL(request.url).pathname.split("/")[2];
   const originalPrice = await page.locator(".u__strike").textContent();
