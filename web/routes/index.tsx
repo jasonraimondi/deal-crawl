@@ -34,7 +34,7 @@ export default function Page(props: PageProps<{ products: Product[] }>) {
       {Object.entries(dateProducts).map(([date, value]) => (
         <div>
           <p className="pl-2 pt-2 text-xl font-semibold">{date}</p>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          <div className="grid xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {value.map((p) => <ProductCard product={p} />) ?? "No Content..."}
           </div>
         </div>
