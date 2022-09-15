@@ -1,9 +1,10 @@
 import { Client } from "pg/mod.ts";
 
-export const db = new Client(
-  Deno.env.get("DATABASE_URL") ??
-    "postgresql://crawlee:secret@localhost:5432/crawlee",
-);
+import "dotenv/load.ts";
+
+const connection = Deno.env.get("DATABASE_URL") ?? "postgresql://crawlee:secret@localhost:5432/crawlee";
+
+export const db = new Client(connection);
 
 export type Product = {
   id: string;

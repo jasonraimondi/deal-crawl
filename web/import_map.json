@@ -9,6 +9,9 @@
     "twind": "https://esm.sh/twind@0.16.17",
     "twind/": "https://esm.sh/twind@0.16.17/",
     "pg": "https://deno.land/x/postgres@v0.16.1",
-    "pg/": "https://deno.land/x/postgres@v0.16.1/"
+    "pg/": "https://deno.land/x/postgres@v0.16.1/",
+    "dotenv": "https://deno.land/x/dotenv@v3.2.0",
+    "dotenv/": "https://deno.land/x/dotenv@v3.2.0/",
+    "datetime": "https://deno.land/std@v0.155.0/datetime/mod.ts"
   }
 }
