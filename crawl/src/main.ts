@@ -1,21 +1,33 @@
 import "dotenv/config";
 
-import { log, PlaywrightCrawler } from "crawlee";
+import { PlaywrightCrawler } from "crawlee";
 
-import { router } from "./routes";
 import { prisma } from "./db";
+import { playwrightRouter, ROUTES } from "./routes/_routes";
+
+const headless = process.env.HEADLESS !== "true";
 
 void (async function () {
   await prisma.$connect();
 
-  log.debug("Setting up crawler.");
-  const crawler = new PlaywrightCrawler({
-    requestHandler: router,
-    headless: process.env.HEADLESS !== "true",
-  });
-  log.debug("Adding requests to the queue.");
-  await crawler.addRequests(["https://www.homedepot.com/SpecialBuy/SpecialBuyOfTheDay"]);
-  await crawler.run();
+  const crawler = new PlaywrightCrawler({ headless, requestHandler: playwrightRouter });
+
+  await import("./routes/home-depot");
+  await import("./routes/lowes");
+
+  await crawler.addRequests([
+    // {
+    //   url: "https://www.homedepot.com/SpecialBuy/SpecialBuyOfTheDay",
+    //   label: ROUTES.homeDepot.root,
+    // },
+    {
+      url: "https://www.lowes.com/l/savings/daily-deals",
+      label: ROUTES.lowes.root,
+    },
+  ]);
+
+  const result = await crawler.run();
+  console.log(result);
 })()
   .then(async () => {
     await prisma.$disconnect();

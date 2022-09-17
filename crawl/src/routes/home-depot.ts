@@ -1,15 +1,24 @@
 import { Product } from "@deal-crawl/prisma";
-import { createPlaywrightRouter } from "crawlee";
-import { Page } from "playwright";
 import dayjs from "dayjs";
 import cuid from "cuid";
-import { prisma } from "./db";
 
-const router = createPlaywrightRouter();
+import { prisma } from "../db";
+import scrollToBottom from "../utils/scroll-to-bottom";
+import { playwrightRouter, ROUTES } from "./_routes";
 
-const PRODUCT_PAGE = "PRODUCT_PAGE";
+playwrightRouter.addHandler(ROUTES.homeDepot.root, async ctx => {
+  const { request, page, enqueueLinks, log } = ctx;
+  await page.waitForSelector("#products-grid-0");
+  await scrollToBottom(page);
+  log.info(`Enqueueing pagination: ${request.url}`);
+  await enqueueLinks({
+    selector: "[data-type='product'] a",
+    label: ROUTES.homeDepot.detail,
+  });
+  log.info(`handle: ${request.url}`);
+});
 
-router.addHandler(PRODUCT_PAGE, async ctx => {
+playwrightRouter.addHandler(ROUTES.homeDepot.detail, async ctx => {
   const { request, page, log } = ctx;
   log.info(`scraping ${request.url}`);
   await page.waitForSelector("[name='price']");
@@ -55,30 +64,3 @@ router.addHandler(PRODUCT_PAGE, async ctx => {
     .findFirstOrThrow({ where: { sale_date, title, brand } })
     .catch(async () => await prisma.product.create({ data: product }));
 });
-
-async function scrollToBottom(page: Page) {
-  await page.evaluate(async () => {
-    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-    for (let i = 0; i < document.body.scrollHeight; i += 100) {
-      window.scrollTo(0, i);
-      await delay(100);
-    }
-  });
-}
-
-router.addDefaultHandler(async ctx => {
-  const { request, page, enqueueLinks, log } = ctx;
-
-  await page.waitForSelector("#products-grid-0");
-
-  await scrollToBottom(page);
-
-  log.info(`Enqueueing pagination: ${request.url}`);
-  await enqueueLinks({
-    selector: "[data-type='product'] a",
-    label: PRODUCT_PAGE,
-  });
-  log.info(`handle: ${request.url}`);
-});
-
-export { router };
